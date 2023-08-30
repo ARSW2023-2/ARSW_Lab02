@@ -1,0 +1,56 @@
+Laboratorio 2
+Programación concurrente, condiciones de carrera, esquemas de sincronización, colecciones sincronizadas y concurrentes.
+
+Integrantes: 
+Luisa Fernanda Bermúdez Girón
+Karol Daniela Ladino Ladino
+
+Squad:
+Inside Out
+
+---------------------------------------------------------------------------------------------------------------------------------------------------
+
+1.	Analice el código para entender cómo hace uso de hilos para crear un comportamiento autónomo de las N serpientes.
+    
+    Respuesta:
+    La clase Snake implementa la interfaz Runnable, lo que significa que cada instancia de serpiente puede ejecutarse 
+    en su propio hilo el cual ejecuta la lógica de movimiento y comportamiento de cada una de las serpientes.
+
+    SnakeApp crea instancias de serpientes y hilos para cada serpiente, permitiendo que todas las serpientes se muevan 
+    y actúen autónomamente en paralelo. 
+
+
+2.	De acuerdo con lo anterior, y con la lógica del juego, identifique y escriba claramente (archivo RESPUESTAS.txt):
+
+    * Posibles condiciones de carrera.
+        1.	Revisar si una celda esta libre o no.
+        2.	Si hay comida disponible en una casilla.
+        3.	Si una flecha roja está disponible o no.
+        4.	Si un rayo está disponible o no.
+
+
+    * Uso inadecuado de colecciones, considerando su manejo concurrente (para esto, aumente la velocidad del juego y 
+      ejecútelo varias veces hasta que se genere un error).
+
+      Respuesta:
+      Dentro de la clase Snake, ajustamos los valores de los tiempos de espera en el método run(). Para esto reducimos 
+      los valores cambiando de 500 milisegundos a 1 milisegundo dentro del método Thread.sleep() para que las serpientes 
+      se movieran más rápido.
+
+      Como podemos ver en la siguiente imagen luego de ejecutar el juego el error que sale es ConcurrentModificationException, 
+      este error se puede dar en el momento en que se está dibujando la serpiente ya que la referencia que pide el tablero para 
+      dibujarla se está iterando mientras la serpiente se modifica (agregando o eliminando elementos).
+
+
+    * Uso innecesario de esperas activas.
+
+      Respuesta:
+      La espera innecesaria está en la clase SnakeApp en el while del metodo init, ya que este bucle verifica constantemente si 
+      todas las serpientes han llegado al final del juego. Cuando todas las serpientes hayan terminado, el bucle se rompe.
+      
+
+3.	Identifique las regiones críticas asociadas a las condiciones de carrera, y haga algo para eliminarlas. Tenga en 
+    cuenta que se debe sincronizar estríctamente LO NECESARIO. En su documento de respuestas indique, la solución realizada 
+    para cada ítem del punto 2. Igualmente tenga en cuenta que en los siguientes puntos NO se deben agregar más posibles 
+    condiciones de carrera.
+
