@@ -54,3 +54,20 @@ Inside Out
     para cada ítem del punto 2. Igualmente tenga en cuenta que en los siguientes puntos NO se deben agregar más posibles 
     condiciones de carrera.
 
+    Respuesta:
+
+    Para evitar las posibles condiciones de carrera que se encontraban en la clase Snake mencionadas anteriormente:
+    * Utilizamos el bloque synchronized para sincronizar el acceso a la colección snakeBody en todos los lugares donde se 
+      modifica o itera sobre esta.
+    * Sincronizamos los métodos checkIfTurboBoost, chekIfJumpPad y checkIfFood utilizando la palabra clave synchronized. De 
+      esta manera se asegura que solo un hilo pueda ejecutar cualquiera de estos métodos en un momento dado.
+
+    Se modifico la clase SnakeApp realizando un bucle for para esperar que todos los hilos de las serpientes finalicen su 
+    ejecución. Dentro de este bucle, llamamos el método join en cada hilo para que cuando todas las serpientes terminen se 
+    consoliden los resultados y así poder imprimir el estado de los hilos. A demás de esto comentamos el while del método 
+    init para evitar el uso innecesario de esperas activas. 
+
+    Al ejecutar nuevamente la aplicación con la misma velocidad del experimento del punto 2 y luego de haber realizado las 
+    respectivas modificaciones mencionadas anteriormente podemos observar que ya no nos sale el error de ConcurrentModificationException. 
+
+
