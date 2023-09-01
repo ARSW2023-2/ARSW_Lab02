@@ -2,8 +2,11 @@ package snakepackage;
 
 import java.awt.Dimension;
 import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 
 import enums.GridSize;
 import java.awt.BorderLayout;
@@ -19,9 +22,12 @@ import javax.swing.JPanel;
  */
 public class SnakeApp {
 
+    private Semaforo semaforo;
+
     private static SnakeApp app;
     public static final int MAX_THREADS = 8;
     Snake[] snakes = new Snake[MAX_THREADS];
+
     private static final Cell[] spawn = {
         new Cell(1, (GridSize.GRID_HEIGHT / 2) / 2),
         new Cell(GridSize.GRID_WIDTH - 2,
@@ -55,7 +61,41 @@ public class SnakeApp {
         
         JPanel actionsBPabel=new JPanel();
         actionsBPabel.setLayout(new FlowLayout());
-        actionsBPabel.add(new JButton("Action "));
+        //actionsBPabel.add(new JButton("Action "));
+        JButton bAction = new JButton("Action ");
+        JButton bPausar = new JButton("Pausar ");
+
+        bPausar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e){
+                if(semaforo.getBandera()){
+                    semaforo.switchBandera();
+                    Integer primeraMuerte = Snake.primeraMuerte;
+                    Integer serpienteMasLarga = Snake.serpienteMasLarga.getIdt();
+                    JOptionPane.showMessageDialog(null, (primeraMuerte != Integer.MIN_VALUE)? "La primera serpiente que murio fue "+primeraMuerte:"No ha muerto ninguna serpiente");
+                    JOptionPane.showMessageDialog(null, (serpienteMasLarga != null)? "La serpiente viva mas larga es "+serpienteMasLarga + " con una longuitud de: "+Snake.longuitudSerpienteMasLarga:"No hay serpientes vivas");
+                }
+            }
+        });
+
+        JButton bReanudar = new JButton("Reanudar ");
+
+        bReanudar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e ){
+                if(!semaforo.getBandera()){
+                    semaforo.switchBandera();
+                    synchronized(semaforo){
+                        semaforo.notifyAll();
+                    }
+                }
+            }
+        });        
+
+        actionsBPabel.add(bAction);
+        actionsBPabel.add(bPausar);
+        actionsBPabel.add(bReanudar);
+
         frame.add(actionsBPabel,BorderLayout.SOUTH);
 
     }
@@ -65,13 +105,13 @@ public class SnakeApp {
         app.init();
     }
 
-    private void init() {
-        
-        
-        
-        for (int i = 0; i != MAX_THREADS; i++) {
-            
-            snakes[i] = new Snake(i + 1, spawn[i], i + 1);
+    private void init() {     
+
+        semaforo = new Semaforo();
+        semaforo.setBandera(true);
+
+        for (int i = 0; i != MAX_THREADS; i++) {            
+            snakes[i] = new Snake(i + 1, spawn[i], i + 1,semaforo);
             snakes[i].addObserver(board);
             thread[i] = new Thread(snakes[i]);
             thread[i].start();
