@@ -27,10 +27,13 @@ public class Snake extends Observable implements Runnable {
     private boolean isSelected = false;
     private int growing = 0;
     public boolean goal = false;
+    public Semaforo semaforo;
+    public static Integer primeraMuerte = Integer.MIN_VALUE;
 
-    public Snake(int idt, Cell head, int direction) {
+    public Snake(int idt, Cell head, int direction, Semaforo semaforo) {
         this.idt = idt;
         this.direction = direction;
+        this.semaforo = semaforo;
         generateSnake(head);
 
     }
@@ -53,6 +56,15 @@ public class Snake extends Observable implements Runnable {
     @Override
     public void run() {
         while (!snakeEnd) {
+            if(!semaforo.getBandera()){
+                synchronized(semaforo){
+                    try{
+                        semaforo.wait();
+                    }catch(InterruptedException e){
+                        e.printStackTrace();
+                    }
+                }
+            }
             
             snakeCalc();
 
@@ -116,6 +128,12 @@ public class Snake extends Observable implements Runnable {
             System.out.println("[" + idt + "] " + "CRASHED AGAINST BARRIER "
                     + newCell.toString());
             snakeEnd=true;
+
+            synchronized(primeraMuerte){
+                if(primeraMuerte == Integer.MIN_VALUE){
+                    primeraMuerte = idt;
+                }
+            }
         }
     }
 
