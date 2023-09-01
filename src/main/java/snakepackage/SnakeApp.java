@@ -80,7 +80,7 @@ public class SnakeApp {
         frame.setVisible(true);
 
             
-        while (true) {
+        /*while (true) {
             int x = 0;
             for (int i = 0; i != MAX_THREADS; i++) {
                 if (snakes[i].isSnakeEnd() == true) {
@@ -89,6 +89,18 @@ public class SnakeApp {
             }
             if (x == MAX_THREADS) {
                 break;
+            }
+        }*/
+
+        //Espera a que todos los hilos finalicen su ejecucion
+        for(int i=0; i!=MAX_THREADS; i++){
+            try{
+                //Espera a que todos los hilos terminen para consolidar los resultados
+                thread[i].join();
+
+            }catch(InterruptedException e){
+                e.printStackTrace();
+
             }
         }
 

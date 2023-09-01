@@ -3,6 +3,7 @@ package snakepackage;
 import java.util.LinkedList;
 import java.util.Observable;
 import java.util.Random;
+import java.util.concurrent.ConcurrentLinkedDeque;
 
 import enums.Direction;
 import enums.GridSize;
@@ -41,7 +42,11 @@ public class Snake extends Observable implements Runnable {
     private void generateSnake(Cell head) {
         start = head;
         //Board.gameboard[head.getX()][head.getY()].reserveCell(jumps, idt);
-        snakeBody.add(head);
+        
+        //Creacion de bloque sincronizado para asegurar que solo un hilo pueda realizar la operacion
+        synchronized(snakeBody){
+            snakeBody.add(head);
+        }
         growing = INIT_SIZE - 1;
     }
 
@@ -73,7 +78,10 @@ public class Snake extends Observable implements Runnable {
     }
 
     private void snakeCalc() {
-        head = snakeBody.peekFirst();
+        //Creacion de bloque sincronizado para asegurar que solo un hilo pueda realizar la operacion
+        synchronized(snakeBody){
+            head = snakeBody.peekFirst();
+        }
 
         newCell = head;
 
@@ -86,7 +94,11 @@ public class Snake extends Observable implements Runnable {
         checkIfTurboBoost(newCell);
         checkIfBarrier(newCell);
         
-        snakeBody.push(newCell);
+        //Creacion de bloque sincronizado para asegurar que solo un hilo pueda realizar la operacion
+        synchronized(snakeBody){
+            snakeBody.push(newCell);
+        }
+        
 
         if (growing <= 0) {
             newCell = snakeBody.peekLast();
@@ -151,7 +163,8 @@ public class Snake extends Observable implements Runnable {
         }
     }
 
-    private void checkIfTurboBoost(Cell newCell) {
+    //Se sincronizo el metodo checkIfTurboBoost para que solo un hilo pueda ejecutarlo a la vez
+    private synchronized void checkIfTurboBoost(Cell newCell) {
         if (Board.gameboard[newCell.getX()][newCell.getY()].isTurbo_boost()) {
             // get turbo_boost
             for (int i = 0; i != Board.NR_TURBO_BOOSTS; i++) {
@@ -167,7 +180,8 @@ public class Snake extends Observable implements Runnable {
         }
     }
 
-    private void checkIfJumpPad(Cell newCell) {
+    //Se sincronizo el metodo checkIfJumpPad para que solo un hilo pueda ejecutarlo a la vez
+    private synchronized void checkIfJumpPad(Cell newCell) {
 
         if (Board.gameboard[newCell.getX()][newCell.getY()].isJump_pad()) {
             // get jump_pad
@@ -184,7 +198,8 @@ public class Snake extends Observable implements Runnable {
         }
     }
 
-    private void checkIfFood(Cell newCell) {
+    //Se sincronizo el metodo checkIfFood para que solo un hilo pueda ejecutarlo a la vez
+    private synchronized void checkIfFood(Cell newCell) {
         Random random = new Random();
 
         if (Board.gameboard[newCell.getX()][newCell.getY()].isFood()) {
@@ -328,7 +343,10 @@ public class Snake extends Observable implements Runnable {
     }*/
 
     public LinkedList<Cell> getBody() {
-        return this.snakeBody;
+        //Creacion de bloque sincronizado para asegurar que solo un hilo pueda realizar la operacion
+        synchronized(snakeBody){
+            return new LinkedList<Cell>(this.snakeBody);
+        }
     }
 
     public boolean isSelected() {
