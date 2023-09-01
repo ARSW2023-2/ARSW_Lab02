@@ -27,8 +27,13 @@ public class Snake extends Observable implements Runnable {
     private boolean isSelected = false;
     private int growing = 0;
     public boolean goal = false;
+
     public Semaforo semaforo;
     public static Integer primeraMuerte = Integer.MIN_VALUE;
+
+    //Variables para mantener el registro de la serpiente mas larga
+    public static Snake serpienteMasLarga = null;
+    public static int longuitudSerpienteMasLarga = 0;
 
     public Snake(int idt, Cell head, int direction, Semaforo semaforo) {
         this.idt = idt;
@@ -118,6 +123,13 @@ public class Snake extends Observable implements Runnable {
             Board.gameboard[newCell.getX()][newCell.getY()].freeCell();
         } else if (growing != 0) {
             growing--;
+        }
+
+        //Actualizar el registro de la serpiente mas larga
+        if(snakeBody.size() > longuitudSerpienteMasLarga){
+            serpienteMasLarga = this;
+            longuitudSerpienteMasLarga = snakeBody.size();
+
         }
 
     }

@@ -71,7 +71,9 @@ public class SnakeApp {
                 if(semaforo.getBandera()){
                     semaforo.switchBandera();
                     Integer primeraMuerte = Snake.primeraMuerte;
+                    Integer serpienteMasLarga = Snake.serpienteMasLarga.getIdt();
                     JOptionPane.showMessageDialog(null, (primeraMuerte != Integer.MIN_VALUE)? "La primera serpiente que murio fue "+primeraMuerte:"No ha muerto ninguna serpiente");
+                    JOptionPane.showMessageDialog(null, (serpienteMasLarga != null)? "La serpiente viva mas larga es "+serpienteMasLarga + " con una longuitud de: "+Snake.longuitudSerpienteMasLarga:"No hay serpientes vivas");
                 }
             }
         });
